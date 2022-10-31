@@ -1,26 +1,25 @@
 {
-  "name": "sgoettsch/monolog-datadog",
+  "name": "xtain/monolog-datadog",
   "description": "Monolog Handler to forward logs to Datadog using async requests.",
   "type": "library",
   "license": "MIT",
   "keywords": [
     "monolog"
   ],
-  "homepage": "https://github.com/sgoettsch/monolog-datadog",
+  "homepage": "https://github.com/XTAIN/monolog-datadog",
   "authors": [
     {
-      "name": "Sebastian Goettsch"
+      "name": "Maximilian Ruta"
     }
   ],
   "require": {
     "php": "^8.0",
-    "ext-curl": "*",
-    "monolog/monolog": ">=1.0 <3.0",
+    "monolog/monolog": ">=3.0",
     "guzzlehttp/guzzle": "^7.5"
   },
   "autoload": {
     "psr-4": {
-      "sgoettsch\\MonologDatadog\\": "src/Monolog"
+      "XTAIN\\MonologDatadog\\": "src/"
     }
   }
 }

@@ -37,10 +37,6 @@ class DatadogHandler extends AbstractProcessingHandler
         int|string $level = Logger::DEBUG,
         bool $bubble = true
     ) {
-        if (!extension_loaded('curl')) {
-            throw new MissingExtensionException('The curl extension is needed to use the DatadogHandler');
-        }
-
         parent::__construct($level, $bubble);
 
         $this->apiKey = $apiKey;
@@ -90,8 +86,7 @@ class DatadogHandler extends AbstractProcessingHandler
         $client = new Client();
         $request = new Request('POST', $url, $headers, json_encode($payLoad, JSON_THROW_ON_ERROR));
 
-        $promise = $client->sendAsync($request);
-        $promise->wait();
+        $response = $client->send($request);
     }
 
     /**
