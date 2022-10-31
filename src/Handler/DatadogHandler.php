@@ -81,10 +81,10 @@ class DatadogHandler extends AbstractProcessingHandler
         $payLoad = json_decode($record['formatted'], true, 512, JSON_THROW_ON_ERROR);
 
         if (isset($payLoad['extra']['status'])) {
-            $payLoad['status'] = $payLoad['extra']['status'];
             unset($payLoad['extra']['status']);
         }
 
+        $payLoad['message'] = $record['message'];
         $payLoad['ddsource'] = $source;
         $payLoad['ddtags'] = $tags;
         $payLoad['hostname'] = $hostname;
@@ -137,7 +137,7 @@ class DatadogHandler extends AbstractProcessingHandler
      */
     protected function getTags(LogRecord $record): string
     {
-        $defaultTag = 'level:' . $record['level_name'];
+        $defaultTag = 'level:' . $record['extra']['status'];
 
         if (!isset($this->attributes['tags']) || !$this->attributes['tags']) {
             return $defaultTag;
