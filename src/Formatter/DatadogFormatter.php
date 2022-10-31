@@ -4,11 +4,11 @@ namespace XTAIN\MonologDatadog\Formatter;
 
 use Monolog\Formatter\JsonFormatter;
 use Monolog\Logger;
-use stdClass;
+use Monolog\LogRecord;
 
 class DatadogFormatter extends JsonFormatter
 {
-    protected $includeStacktraces = true;
+    protected bool $includeStacktraces = true;
 
     /**
      * Map Monolog\Logger levels to Datadog's default status type
@@ -24,19 +24,19 @@ class DatadogFormatter extends JsonFormatter
         Logger::EMERGENCY => 'error',
     ];
 
-    public function format(array $record): string
+    public function format(LogRecord $record): string
     {
         $normalized = $this->normalize($record);
 
         if (isset($normalized['context']) && $normalized['context'] === []) {
-            $normalized['context'] = new stdClass;
+            $normalized['context'] = [];
         }
 
         if (isset($normalized['extra']) && $normalized['extra'] === []) {
-            $normalized['extra'] = new stdClass;
+            $normalized['extra'] = [];
         }
 
-        $normalized['status'] = static::DATADOG_LEVEL_MAP[$record['level']];
+        $normalized['extra']['status'] = static::DATADOG_LEVEL_MAP[$record['level']];
 
         return $this->toJson($normalized, true);
     }

@@ -7,7 +7,8 @@ use Monolog\Handler\MissingExtensionException;
 use Monolog\Logger;
 use Monolog\Handler\AbstractProcessingHandler;
 use Monolog\Formatter\FormatterInterface;
-use sgoettsch\MonologDatadog\Formatter\DatadogFormatter;
+use Monolog\LogRecord;
+use XTAIN\MonologDatadog\Formatter\DatadogFormatter;
 use GuzzleHttp\Client;
 use GuzzleHttp\Psr7\Request;
 
@@ -51,7 +52,7 @@ class DatadogHandler extends AbstractProcessingHandler
      * @return void
      * @throws JsonException
      */
-    protected function write(array $record): void
+    protected function write(LogRecord $record): void
     {
         $this->send($record);
     }
@@ -59,11 +60,11 @@ class DatadogHandler extends AbstractProcessingHandler
     /**
      * Send request to Datadog
      *
-     * @param array $record
+     * @param LogRecord $record
      * @throws JsonException
      * @noinspection SpellCheckingInspection
      */
-    protected function send(array $record): void
+    protected function send(LogRecord $record): void
     {
         $headers = [
             'Content-Type' => 'application/json',
@@ -78,6 +79,12 @@ class DatadogHandler extends AbstractProcessingHandler
         $url = $this->host . '/api/v2/logs';
 
         $payLoad = json_decode($record['formatted'], true, 512, JSON_THROW_ON_ERROR);
+
+        if (isset($payLoad['extra']['status'])) {
+            $payLoad['status'] = $payLoad['extra']['status'];
+            unset($payLoad['extra']['status']);
+        }
+
         $payLoad['ddsource'] = $source;
         $payLoad['ddtags'] = $tags;
         $payLoad['hostname'] = $hostname;
@@ -106,7 +113,7 @@ class DatadogHandler extends AbstractProcessingHandler
      *
      * @return string
      */
-    protected function getService(array $record): string
+    protected function getService(LogRecord $record): string
     {
         return $this->attributes['service'] ?? $record['channel'];
     }
@@ -118,7 +125,7 @@ class DatadogHandler extends AbstractProcessingHandler
      */
     protected function getHostname(): string
     {
-        return $this->attributes['hostname'] ?? $_SERVER['SERVER_NAME'];
+        return $this->attributes['hostname'] ?? gethostname();
     }
 
     /**
@@ -128,7 +135,7 @@ class DatadogHandler extends AbstractProcessingHandler
      *
      * @return string
      */
-    protected function getTags(array $record): string
+    protected function getTags(LogRecord $record): string
     {
         $defaultTag = 'level:' . $record['level_name'];
 
