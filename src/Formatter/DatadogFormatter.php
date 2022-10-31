@@ -1,6 +1,6 @@
 <?php
 
-namespace sgoettsch\MonologDatadog\Formatter;
+namespace XTAIN\MonologDatadog\Formatter;
 
 use Monolog\Formatter\JsonFormatter;
 use Monolog\Logger;

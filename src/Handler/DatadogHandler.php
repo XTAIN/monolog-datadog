@@ -1,6 +1,6 @@
 <?php
 
-namespace sgoettsch\MonologDatadog\Handler;
+namespace XTAIN\MonologDatadog\Handler;
 
 use JsonException;
 use Monolog\Handler\MissingExtensionException;
