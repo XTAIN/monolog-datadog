@@ -9,7 +9,7 @@ Monolog Handler to forward logs to Datadog using async requests.
 ## Installation
 
 ```shell
-composer require sgoettsch/monolog-datadog
+composer require xtain/monolog-datadog
 ```
 
 ### Basic Usage
@@ -18,7 +18,7 @@ composer require sgoettsch/monolog-datadog
 <?php
 
 use Monolog\Logger;
-use sgoettsch\MonologDatadog\Handler\DatadogHandler;
+use XTAIN\MonologDatadog\Handler\DatadogHandler;
 
 $apiKey = 'DATADOG-API-KEY';
 $host = 'https://http-intake.logs.datadoghq.com'; // could be set to other domains for example for EU hosted accounts ( https://http-intake.logs.datadoghq.eu )
