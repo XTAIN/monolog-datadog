@@ -28,14 +28,6 @@ class DatadogFormatter extends JsonFormatter
     {
         $normalized = $this->normalize($record);
 
-        if (isset($normalized['context']) && $normalized['context'] === []) {
-            $normalized['context'] = [];
-        }
-
-        if (isset($normalized['extra']) && $normalized['extra'] === []) {
-            $normalized['extra'] = [];
-        }
-
         $normalized['extra']['status'] = static::DATADOG_LEVEL_MAP[$record['level']];
 
         return $this->toJson($normalized, true);
