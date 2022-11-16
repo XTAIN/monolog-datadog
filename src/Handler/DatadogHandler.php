@@ -94,7 +94,11 @@ class DatadogHandler extends AbstractProcessingHandler
         $client = new Client();
         $request = new Request('POST', $url, $headers, json_encode($payLoad, JSON_THROW_ON_ERROR));
 
-        $response = $client->send($request);
+        try {
+            $response = $client->send($request);
+        } catch (\Exception $e) {
+            // log something
+        }
     }
 
     /**
