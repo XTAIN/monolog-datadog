@@ -80,12 +80,19 @@ class DatadogHandler extends AbstractProcessingHandler
 
         $payLoad = json_decode($record['formatted'], true, 512, JSON_THROW_ON_ERROR);
 
-        if (isset($payLoad['extra']['status'])) {
-            $payLoad['status'] = $payLoad['extra']['status'];
-            unset($payLoad['extra']['status']);
+        $message = $record['message'];
+
+        if (isset($payLoad['extra']['message'])) {
+            $message = $payLoad['extra']['message'];
+            unset($payLoad['extra']['message']);
         }
 
-        $payLoad['message'] = $record['message'];
+        if (isset($payLoad['extra']['level_name'])) {
+            $payLoad['level_name'] = strtoupper($payLoad['extra']['level_name']);
+            unset($payLoad['extra']['level_name']);
+        }
+
+        $payLoad['message'] = $message;
         $payLoad['ddsource'] = $source;
         $payLoad['ddtags'] = $tags;
         $payLoad['hostname'] = $hostname;
@@ -134,6 +141,26 @@ class DatadogHandler extends AbstractProcessingHandler
     }
 
     /**
+     * Get Datadog Version from $attributes params.
+     *
+     * @return string
+     */
+    protected function getVersion(): ?string
+    {
+        return $this->attributes['version'] ?? null;
+    }
+
+    /**
+     * Get Datadog Env from $attributes params.
+     *
+     * @return string
+     */
+    protected function getEnv(): ?string
+    {
+        return $this->attributes['env'] ?? null;
+    }
+
+    /**
      * Get Datadog Tags from $attributes params.
      *
      * @param array $record
@@ -143,6 +170,14 @@ class DatadogHandler extends AbstractProcessingHandler
     protected function getTags(LogRecord $record): string
     {
         $defaultTag = 'level:' . $record['level_name'];
+
+        if ($this->getEnv() !== null) {
+            $defaultTag .= ',env:' . $this->getEnv();
+        }
+
+        if ($this->getVersion() !== null) {
+            $defaultTag .= ',version:' . $this->getVersion();
+        }
 
         if (!isset($this->attributes['tags']) || !$this->attributes['tags']) {
             return $defaultTag;

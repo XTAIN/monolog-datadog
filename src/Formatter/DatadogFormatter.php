@@ -24,11 +24,40 @@ class DatadogFormatter extends JsonFormatter
         Logger::EMERGENCY => 'error',
     ];
 
+    private function dumpData(mixed $data): string
+    {
+        if (is_object($data) || is_array($data)) {
+            return json_encode($data);
+        }
+
+        return (string)$data;
+    }
+
+    private function replacePlaceHolder(LogRecord $record): string
+    {
+        $message = $record['message'];
+
+        if (!str_contains($message, '{')) {
+            return $message;
+        }
+
+        $context = $record['context'];
+
+        $replacements = [];
+        foreach ($context as $k => $v) {
+            // Remove quotes added by the dumper around string.
+            $replacements['{'.$k.'}'] = $this->dumpData($v);
+        }
+
+        return strtr($message, $replacements);
+    }
+
     public function format(LogRecord $record): string
     {
         $normalized = $this->normalize($record);
 
-        $normalized['extra']['status'] = static::DATADOG_LEVEL_MAP[$record['level']];
+        $normalized['extra']['message'] = $this->replacePlaceHolder($record);
+        $normalized['extra']['level_name'] = static::DATADOG_LEVEL_MAP[$record['level']];
 
         return $this->toJson($normalized, true);
     }
